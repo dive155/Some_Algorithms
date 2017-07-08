@@ -65,11 +65,21 @@ public class List : MonoBehaviour {
 			}
 		}
 
+		public void addHead (int val) {
+			Item newElem = new Item (); //creating new element
+			newElem.setValue (val);
+			newElem.next = head; //the next element is the old head
+			head = newElem; //we have a new head
+			FixIndexes ();
+			length++;
+			return;
+		}
+
 		public void Insert (int ind, int val){
 			if (ind > length - 1) //making sure we're not out of range
 				return;
 
-			Item newElem = new Item (); //creating new element
+			/*Item newElem = new Item (); //creating new element
 			newElem.setValue (val);
 
 
@@ -79,11 +89,19 @@ public class List : MonoBehaviour {
 				FixIndexes ();
 				length++;
 				return;
+			}*/
+
+			if (ind == 0) { //if inserting to the head of the list
+				addHead(val);
+				return;
 			}
+
+			Item newElem = new Item (); //creating a new element
+			newElem.setValue (val);
 				
 			Item current = head;
 			for (int i = 0; i < ind-1; i++) {
-				current = current.next; //moving to the element ind-1
+				current = current.next; //searching the element ind-1
 			}
 
 			Item nextElem = current.next; //remembering the next element
@@ -147,17 +165,17 @@ public class List : MonoBehaviour {
 		}
 
 		textUI.text += "The source list:\n";
-		textUI.text += myList.PrintList();
+		textUI.text += myList.PrintList(); //printing the source list
 
-		myList.Insert (insertionIndex, insertionValue);
+		myList.Insert (insertionIndex, insertionValue); //inserting a value
 		textUI.text += string.Format("Inserting the value {0} into the spot indexed {1}:\n", insertionValue, insertionIndex); //printing the message
-		textUI.text += myList.PrintList();
+		textUI.text += myList.PrintList(); 
 
-		myList.Remove (removalIndex);
+		myList.Remove (removalIndex); //removing a value
 		textUI.text += string.Format("Removing the item indexed {0}:\n", removalIndex);
 		textUI.text += myList.PrintList();
 
-		int searchInd = myList.SearchValue (searchValue);
+		int searchInd = myList.SearchValue (searchValue); //searching by value
 		if (searchInd == -1) {
 			textUI.text += string.Format ("An element with value {0} was not found.\n", searchValue);
 		} else {
