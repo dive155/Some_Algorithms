@@ -5,8 +5,10 @@ using UnityEngine;
 public class aTree : MonoBehaviour {
 
 	public GUIText textUI;
+	public GUIText textUI2;
 	public int[] inputs;
 	public int searchVal;
+	public int deleteVal;
 
 	public class Node {//a node of the tree
 		public int index;
@@ -75,9 +77,9 @@ public class aTree : MonoBehaviour {
 				textOut.text += "The element was found\n";
 			} else { //if it's not found
 				if (val < current.value ) { //if it's less than current, search to the left
-					if (current.left != null) {
-						SearchTree (current.left, val);
-					} else {
+					if (current.left != null) { //if there are more nodes
+						SearchTree (current.left, val); //search them
+					} else { //if there is no nodes, then aint got eem
 						textOut.text += "The element was not found\n";
 					}
 				} else { //else to the right
@@ -90,6 +92,38 @@ public class aTree : MonoBehaviour {
 			}
 		}
 
+		public Node FindMin(Node current) {
+			if (current.left != null) { //find the min below the current node
+				return FindMin (current.left);
+			} else {
+				//textOut.text += string.Format ("The min is {0} \n", current.value);
+				return current;
+			}
+		}
+
+		public void Delete (Node current, int val) {
+			if (val < current.value)
+				Delete (current.left, val); //if val is smaller, search left
+			else if (val > current.value)
+				Delete (current.right, val); //if val is greater, search right
+			else { //got eem
+				if (current.left == null && current.right == null) {
+					textOut.text += string.Format ("{0} has no children, removing\n", current.value);
+					current = null; //if current has no children, just delete it
+				} else if (current.left == null) { //if it has one child on the right
+					textOut.text += string.Format ("{0} has a child on the right\n", current.value);
+					current = current.right; //just attach the right subtree instead of this node
+				} else if (current.right == null) { //if it has one child on the left
+					textOut.text += string.Format ("{0} has a child on the left\n", current.value);
+					current = current.left; //ditto
+				} else {
+					Node temp = FindMin (current.right);
+					current.setValue (temp.value);
+					Delete (current.right, temp.value);
+				}
+			}
+
+		}
 	}
 	// Use this for initialization
 	void Start () {
@@ -100,15 +134,14 @@ public class aTree : MonoBehaviour {
 		for (int i = 0; i < inputs.Length; i++) {
 			myTree.Insert (myTree.root, inputs [i]); //adding elements from the array into the list
 		}
-		/*
-		myTree.Insert (myTree.root, 10);
-		myTree.Insert (myTree.root, 8);
-		myTree.Insert (myTree.root, 12);
-		myTree.Insert (myTree.root, 7);
-		myTree.Insert (myTree.root, 9);
-*/
+
 		myTree.PrintTree (myTree.root);
 		myTree.SearchTree (myTree.root, searchVal);
+		myTree.FindMin (myTree.root.right.right);
+
+		myTree.textOut = textUI2;
+		myTree.Delete (myTree.root, deleteVal);
+		myTree.PrintTree (myTree.root);
 	}
 	
 	// Update is called once per frame
