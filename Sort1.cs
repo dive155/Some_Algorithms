@@ -156,7 +156,7 @@ public class Sort1 : MonoBehaviour {
 		int c = a + b; //sum of previous two numbers
 		textUI.text += c;
 		textUI.text += " ";
-		if (c > 600) //end condition
+		if (c > 80) //end condition
 			return;
 		Fibonacci (b, c); //next number
 	}

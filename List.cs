@@ -79,18 +79,6 @@ public class List : MonoBehaviour {
 			if (ind > length - 1) //making sure we're not out of range
 				return;
 
-			/*Item newElem = new Item (); //creating new element
-			newElem.setValue (val);
-
-
-			if (ind == 0) { //if inserting to the head of the list
-				newElem.next = head; //the next element
-				head = newElem; //we have a new head
-				FixIndexes ();
-				length++;
-				return;
-			}*/
-
 			if (ind == 0) { //if inserting to the head of the list
 				addHead(val);
 				return;
