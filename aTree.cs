@@ -79,13 +79,13 @@ public class aTree : MonoBehaviour {
 				if (val < current.value ) { //if it's less than current, search to the left
 					if (current.left != null) { //if there are more nodes
 						SearchTree (current.left, val); //search them
-					} else { //if there is no nodes, then aint got eem
+					} else { //if there are no nodes, then aint got eem
 						textOut.text += "The element was not found\n";
 					}
 				} else { //else to the right
-					if (current.right != null) {
-						SearchTree (current.right, val);
-					} else {
+					if (current.right != null) {//if there are more nodes
+						SearchTree (current.right, val); //search them
+					} else {//if there are no nodes, then aint got eem
 						textOut.text += "The element was not found\n";
 					}
 				}
@@ -101,29 +101,36 @@ public class aTree : MonoBehaviour {
 			}
 		}
 
-		public void Delete (Node current, int val) {
+		public void Delete (Node current, Node parent, int val) { //removing a node
 			if (val < current.value)
-				Delete (current.left, val); //if val is smaller, search left
+				Delete (current.left, current, val); //if val is smaller, search left
 			else if (val > current.value)
-				Delete (current.right, val); //if val is greater, search right
+				Delete (current.right, current, val); //if val is greater, search right
 			else { //got eem
-				if (current.left == null && current.right == null) {
-					textOut.text += string.Format ("{0} has no children, removing\n", current.value);
-					current = null; //if current has no children, just delete it
+				if (current.left == null && current.right == null) { //if current has no children, just delete it
+					//textOut.text += string.Format ("{0} has no children, removing\n", current.value);
+					if (parent.left == current) //deleting the node by removing references to it
+						parent.left = null; //i wish i could just use "delete", i miss c++ :(
+					else
+						parent.right = null;
 				} else if (current.left == null) { //if it has one child on the right
-					textOut.text += string.Format ("{0} has a child on the right\n", current.value);
-					current = current.right; //just attach the right subtree instead of this node
+					//textOut.text += string.Format ("{0} has a child on the right\n", current.value);
+					current.value = current.right.value; //just attach the right subtree instead of this node
+					current.left = current.right.left; //i tried current=current.right but it does not work
+					current.right = current.right.right; //so i had to resort to doing it manually
 				} else if (current.right == null) { //if it has one child on the left
-					textOut.text += string.Format ("{0} has a child on the left\n", current.value);
-					current = current.left; //ditto
-				} else {
-					Node temp = FindMin (current.right);
-					current.setValue (temp.value);
-					Delete (current.right, temp.value);
+					//textOut.text += string.Format ("{0} has a child on the left\n", current.value);
+					current.value = current.left.value; //ditto
+					current.right = current.left.right;
+					current.left = current.left.left;
+				} else { //if the node has two children
+					Node temp = FindMin (current.right); //searching for minimum on the right subtree
+					current.setValue (temp.value); //placing the min instead of the node
+					Delete (current.right, current, temp.value); //removing the min from where it used to be
 				}
 			}
-
 		}
+			
 	}
 	// Use this for initialization
 	void Start () {
@@ -140,7 +147,7 @@ public class aTree : MonoBehaviour {
 		myTree.FindMin (myTree.root.right.right);
 
 		myTree.textOut = textUI2;
-		myTree.Delete (myTree.root, deleteVal);
+		myTree.Delete (myTree.root, null, deleteVal);
 		myTree.PrintTree (myTree.root);
 	}
 	
