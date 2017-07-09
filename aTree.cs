@@ -5,6 +5,8 @@ using UnityEngine;
 public class aTree : MonoBehaviour {
 
 	public GUIText textUI;
+	public int[] inputs;
+	public int searchVal;
 
 	public class Node {//a node of the tree
 		public int index;
@@ -55,35 +57,58 @@ public class aTree : MonoBehaviour {
 			}
 		}
 
-		public void PrintTree(Node current, string outString) {
-			outString += string.Format ("{0} ", current.value);
-			textOut.text += string.Format ("{0} ", current.value);
-			if (current.left != null)
-				PrintTree (current.left, outString);
-			if (current.right != null)
-				PrintTree (current.right, outString);
+		public void PrintTree(Node current) {
+			textOut.text += string.Format ("{0} \n", current.value);
+			if (current.left != null) {
+				textOut.text += " go left ";
+				PrintTree (current.left);
+			}
+			if (current.right != null) {
+				textOut.text += " go right ";
+				PrintTree (current.right);
+			}
+			textOut.text += " go up \n";
+		}
+
+		public void SearchTree(Node current, int val) { //search for a value
+			if (current.value == val) { //if the value is found
+				textOut.text += "The element was found\n";
+			} else { //if it's not found
+				if (val < current.value ) { //if it's less than current, search to the left
+					if (current.left != null) {
+						SearchTree (current.left, val);
+					} else {
+						textOut.text += "The element was not found\n";
+					}
+				} else { //else to the right
+					if (current.right != null) {
+						SearchTree (current.right, val);
+					} else {
+						textOut.text += "The element was not found\n";
+					}
+				}
+			}
 		}
 
 	}
 	// Use this for initialization
 	void Start () {
-		textUI.text += "soop";
 
 		TheTree myTree = new TheTree ();
 		myTree.textOut = textUI;
+
+		for (int i = 0; i < inputs.Length; i++) {
+			myTree.Insert (myTree.root, inputs [i]); //adding elements from the array into the list
+		}
+		/*
 		myTree.Insert (myTree.root, 10);
 		myTree.Insert (myTree.root, 8);
 		myTree.Insert (myTree.root, 12);
 		myTree.Insert (myTree.root, 7);
 		myTree.Insert (myTree.root, 9);
-
-		textUI.text += "woop";
-
-		string outString = "";
-		myTree.PrintTree (myTree.root, outString);
-		textUI.text += outString;
-
-		textUI.text += "doop";
+*/
+		myTree.PrintTree (myTree.root);
+		myTree.SearchTree (myTree.root, searchVal);
 	}
 	
 	// Update is called once per frame
