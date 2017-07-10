@@ -6,9 +6,11 @@ public class aTree : MonoBehaviour {
 
 	public GUIText textUI;
 	public GUIText textUI2;
+	public GUIText textUI3;
 	public int[] inputs;
 	public int searchVal;
 	public int deleteVal;
+	public int[] inputs2;
 
 	public class Node {//a node of the tree
 		public int index;
@@ -72,24 +74,26 @@ public class aTree : MonoBehaviour {
 			textOut.text += " go up \n";
 		}
 
-		public void SearchTree(Node current, int val) { //search for a value
+		public Node SearchTree(Node current, int val) { //search for a value
 			if (current.value == val) { //if the value is found
-				textOut.text += "The element was found\n";
+				textOut.text += "The node \nwas found\n";
+				return current;
 			} else { //if it's not found
 				if (val < current.value ) { //if it's less than current, search to the left
 					if (current.left != null) { //if there are more nodes
 						SearchTree (current.left, val); //search them
 					} else { //if there are no nodes, then aint got eem
-						textOut.text += "The element was not found\n";
+						textOut.text += "The node \nwas not found\n";
 					}
 				} else { //else to the right
 					if (current.right != null) {//if there are more nodes
 						SearchTree (current.right, val); //search them
 					} else {//if there are no nodes, then aint got eem
-						textOut.text += "The element was not found\n";
+						textOut.text += "The node \nwas not found\n";
 					}
 				}
 			}
+			return null;
 		}
 
 		public Node FindMin(Node current) {
@@ -125,10 +129,59 @@ public class aTree : MonoBehaviour {
 					current.left = current.left.left;
 				} else { //if the node has two children
 					Node temp = FindMin (current.right); //searching for minimum on the right subtree
-					current.setValue (temp.value); //placing the min instead of the node
+					current.setValue (temp.value); //placing the min instead of the current node
 					Delete (current.right, current, temp.value); //removing the min from where it used to be
 				}
 			}
+		}
+
+		/* Rotations:
+          10       left--->        12
+		 /  \                     /  \
+		8   12                   10  13
+		   /  \                 /  \
+          11  13   <---right   8   11
+        */
+
+		public void RotateLeft (Node current) {
+			if (current == null) //a little check
+				return;
+			if (current.right == null)
+				return;
+
+			Node temp = new Node (); //a temporary node
+			int tempVal;
+
+			tempVal = current.value; //switching 10 and 12
+			current.value = current.right.value;
+			current.right.value = tempVal;
+
+			temp = current.right.left; //saving 11
+			current.right.left = current.left; //attach 8 to 12
+			current.left = current.right; //moving left subtree to the right
+			current.right = current.left.right; //attaching 13 to 12
+			current.left.right = temp; //bringing back 11
+		}
+
+		public void RotateRight (Node current) {
+			if (current == null) //a little check
+				return;
+			if (current.left == null)
+				return;
+
+			Node temp = new Node (); //a temporary node
+			int tempVal;
+
+			tempVal = current.value; //switching 10 and 12
+			current.value = current.left.value;
+			current.left.value = tempVal;
+
+			temp = current.left.right; //saving 11
+			current.left.right = current.right; //attach 13 to 10
+			current.right = current.left; // moving left subree to the right
+			current.left = current.right.left; //attaching 8 to 12
+			current.right.left = temp; //bringing back 11;
+
 		}
 			
 	}
@@ -136,19 +189,34 @@ public class aTree : MonoBehaviour {
 	void Start () {
 
 		TheTree myTree = new TheTree ();
-		myTree.textOut = textUI;
+		myTree.textOut = textUI; //first tree
 
 		for (int i = 0; i < inputs.Length; i++) {
 			myTree.Insert (myTree.root, inputs [i]); //adding elements from the array into the list
 		}
 
-		myTree.PrintTree (myTree.root);
-		myTree.SearchTree (myTree.root, searchVal);
-		myTree.FindMin (myTree.root.right.right);
+		myTree.PrintTree (myTree.root); //printing the tree
+		myTree.SearchTree (myTree.root, searchVal); //searching
 
-		myTree.textOut = textUI2;
+		myTree.textOut = textUI2; //more space to print the tree
+
+		textUI2.text += string.Format ("Deleting {0} \n", deleteVal);
 		myTree.Delete (myTree.root, null, deleteVal);
 		myTree.PrintTree (myTree.root);
+
+		TheTree newTree = new TheTree ();
+		newTree.textOut = textUI3; //second tree
+
+		for (int j = 0; j < inputs2.Length; j++) {
+			newTree.Insert (newTree.root, inputs2 [j]); //adding elements from the array into the list
+		}
+
+		newTree.PrintTree (newTree.root);
+
+		textUI3.text += "Right rotation:\n";
+		newTree.RotateRight (newTree.root);
+		newTree.PrintTree (newTree.root);
+		//Day-Stout-Warren algorithm
 	}
 	
 	// Update is called once per frame

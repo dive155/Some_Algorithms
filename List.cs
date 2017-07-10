@@ -156,7 +156,7 @@ public class List : MonoBehaviour {
 		textUI.text += myList.PrintList(); //printing the source list
 
 		myList.Insert (insertionIndex, insertionValue); //inserting a value
-		textUI.text += string.Format("Inserting the value {0} into the spot indexed {1}:\n", insertionValue, insertionIndex); //printing the message
+		textUI.text += string.Format("Inserting the value {0} \ninto the spot indexed {1}:\n", insertionValue, insertionIndex); //printing the message
 		textUI.text += myList.PrintList(); 
 
 		myList.Remove (removalIndex); //removing a value
@@ -165,9 +165,9 @@ public class List : MonoBehaviour {
 
 		int searchInd = myList.SearchValue (searchValue); //searching by value
 		if (searchInd == -1) {
-			textUI.text += string.Format ("An element with value {0} was not found.\n", searchValue);
+			textUI.text += string.Format ("An element with value {0} \nwas not found.\n", searchValue);
 		} else {
-			textUI.text += string.Format ("An element with value {0} was found at index {1}.\n", searchValue, searchInd);
+			textUI.text += string.Format ("An element with value {0} \nwas found at index {1}.\n", searchValue, searchInd);
 		}
 	}
 	
