@@ -37,7 +37,6 @@ public class Sort1 : MonoBehaviour {
 		textUI.text += "Fibonacci numbers: \n1 1 ";
 		Fibonacci (1, 1);
 		textUI.text += "\n";
-		textUI.text += string.Format ("numba one {0} numba two {1}", 1, 2);
 	}
 	
 	// Update is called once per frame

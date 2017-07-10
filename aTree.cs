@@ -7,6 +7,7 @@ public class aTree : MonoBehaviour {
 	public GUIText textUI;
 	public GUIText textUI2;
 	public GUIText textUI3;
+	public GUIText textUI4;
 	public int[] inputs;
 	public int searchVal;
 	public int deleteVal;
@@ -27,18 +28,14 @@ public class aTree : MonoBehaviour {
 	public class TheTree { //the tree
 		public Node root;
 		public GUIText textOut;
-
-		public void AddRoot(int val) {
-			Node newNode = new Node ();
-			newNode.setValue(val);
-			root = newNode;
-		}
+		public int NodeCount = 0;
 
 		public void Insert(Node current, int val) {
 			if (current == null) { //if the tree is empty
 				Node newNode = new Node (); //creating a new node
 				newNode.setValue(val);
 				root = newNode; //it's now the root
+				//NodeCount++;
 				return;
 			}
 				
@@ -49,6 +46,7 @@ public class aTree : MonoBehaviour {
 					Node newNode = new Node (); //creating a new node
 					newNode.setValue(val);
 					current.left = newNode;
+					//NodeCount++;
 				}
 			} else {
 				if (current.right != null) {
@@ -57,6 +55,7 @@ public class aTree : MonoBehaviour {
 					Node newNode = new Node (); //creating a new node
 					newNode.setValue(val);
 					current.right = newNode;
+					//NodeCount++;
 				}
 			}
 		}
@@ -117,16 +116,19 @@ public class aTree : MonoBehaviour {
 						parent.left = null; //i wish i could just use "delete", i miss c++ :(
 					else
 						parent.right = null;
+					//NodeCount--;
 				} else if (current.left == null) { //if it has one child on the right
 					//textOut.text += string.Format ("{0} has a child on the right\n", current.value);
 					current.value = current.right.value; //just attach the right subtree instead of this node
 					current.left = current.right.left; //i tried current=current.right but it does not work
 					current.right = current.right.right; //so i had to resort to doing it manually
+					//NodeCount--;
 				} else if (current.right == null) { //if it has one child on the left
 					//textOut.text += string.Format ("{0} has a child on the left\n", current.value);
 					current.value = current.left.value; //ditto
 					current.right = current.left.right;
 					current.left = current.left.left;
+					//NodeCount--;
 				} else { //if the node has two children
 					Node temp = FindMin (current.right); //searching for minimum on the right subtree
 					current.setValue (temp.value); //placing the min instead of the current node
@@ -161,7 +163,7 @@ public class aTree : MonoBehaviour {
 			current.left = current.right; //moving left subtree to the right
 			current.right = current.left.right; //attaching 13 to 12
 			current.left.right = temp; //bringing back 11
-		}
+		} 
 
 		public void RotateRight (Node current) {
 			if (current == null) //a little check
@@ -184,16 +186,38 @@ public class aTree : MonoBehaviour {
 
 		}
 
-		public void MakeBackbone() {
+		//from Day-Stout-Warren algorithm
+		public void MakeBackbone() { //creating a list out of the tree
 			Node current = root;
 			while (current != null) {
-				while (current.left != null) {
-					RotateRight (current);
+				while (current.left != null) { //if there are nodes to the left
+					RotateRight (current); //rotate right until there are none
 				}
-				current = current.right;
+				current = current.right; //moving to the next node
 			}
 		}
-			
+
+		public void BackBoneToBST() {
+			TheTree T = new TheTree (); //a temporary tree
+			convert (0, NodeCount - 1, T); //converting our right-only tree
+			root = T.root; //setting the temporary tree as the main one
+		}
+
+		public void convert (int start, int end, TheTree T) { //searching and adding an element
+			if (start > end)
+				return;
+			int mid = (start + end) / 2; //calculating the middle element
+			Node current = root; 
+			int i = 0;
+			while (i < mid) {
+				current = current.right; //moving to the calculated element
+				i++;
+			}
+			T.Insert (T.root, current.value); //inserting the value of the calculated element into the tree
+			convert (start, mid - 1, T); //doing the same for the left half
+			convert (mid + 1, end, T); //and for the right half
+		}
+
 	}
 	// Use this for initialization
 	void Start () {
@@ -216,18 +240,18 @@ public class aTree : MonoBehaviour {
 
 		TheTree newTree = new TheTree ();
 		newTree.textOut = textUI3; //second tree
-
+		newTree.NodeCount = inputs2.Length;
 		for (int j = 0; j < inputs2.Length; j++) {
 			newTree.Insert (newTree.root, inputs2 [j]); //adding elements from the array into the list
 		}
-
 		newTree.PrintTree (newTree.root);
 
-		textUI3.text += "Backbone:\n";
-		//newTree.RotateRight (newTree.root);
-		newTree.MakeBackbone();
+		newTree.textOut = textUI4;
+		textUI4.text += "Balance:\n";
+		newTree.MakeBackbone(); //making a right-only tree
+		newTree.BackBoneToBST (); //converting to a balanced tree
 		newTree.PrintTree (newTree.root);
-		//Day-Stout-Warren algorithm
+
 	}
 	
 	// Update is called once per frame
