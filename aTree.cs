@@ -183,6 +183,16 @@ public class aTree : MonoBehaviour {
 			current.right.left = temp; //bringing back 11;
 
 		}
+
+		public void MakeBackbone() {
+			Node current = root;
+			while (current != null) {
+				while (current.left != null) {
+					RotateRight (current);
+				}
+				current = current.right;
+			}
+		}
 			
 	}
 	// Use this for initialization
@@ -213,8 +223,9 @@ public class aTree : MonoBehaviour {
 
 		newTree.PrintTree (newTree.root);
 
-		textUI3.text += "Right rotation:\n";
-		newTree.RotateRight (newTree.root);
+		textUI3.text += "Backbone:\n";
+		//newTree.RotateRight (newTree.root);
+		newTree.MakeBackbone();
 		newTree.PrintTree (newTree.root);
 		//Day-Stout-Warren algorithm
 	}
